@@ -149,7 +149,13 @@ class JsonRpcRequest extends Model
 
         try {
             // Replacing requested URL, path info and base url
-            $app->request->setUrl($route);
+            $isPrettyUrlEnabled = $app->urlManager->enablePrettyUrl;
+            $appRequestUrl = $isPrettyUrlEnabled ? $route : '/?r=' . rawurlencode($route);
+
+            $app->request->setUrl($appRequestUrl);
+            if (!$isPrettyUrlEnabled) {
+                $app->request->setQueryParams(['r' => $route]);
+            }
             $app->request->setPathInfo(null);
             $app->request->setBaseUrl(null);
 
